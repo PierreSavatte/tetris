@@ -1,0 +1,2 @@
+setuptools==49.2.0
+pbr==5.4.5
