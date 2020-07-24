@@ -16,3 +16,6 @@ class Board(Drawable):
 
     def get_positions_of_deactivated_cells(self):
         return [c.position for c in self.deactivated_cells]
+
+    def draw(self, screen):
+        raise NotImplementedError()

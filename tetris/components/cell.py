@@ -18,3 +18,6 @@ class Cell(Drawable):
             raise CanNotMoveDown("Can not override a deactivated cell")
         else:
             self.position = future_position
+
+    def draw(self, screen):
+        raise NotImplementedError()
