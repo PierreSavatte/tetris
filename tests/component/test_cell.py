@@ -62,14 +62,21 @@ def test_cell_can_be_printed(draw_rect_mocked):
 
 
 @pytest.mark.parametrize(
-    "position, can_move_down",
-    [((0, 23), False), ((0, 24), False), ((0, 0), True)],
+    "position, future_position, can_move_down",
+    [
+        ((0, 23), (0, 24), False),  # Can not go further the bottom limit
+        ((0, 0), (0, -1), False),  # Can not go further the top limit
+        ((0, 0), (-1, 0), False),  # Can not go further the left limit
+        ((0, 23), (0, 24), False),  # Can not go further the right limit
+        ((0, 22), (0, 23), False),  # There already a cell here
+        ((0, 0), (0, 1), True),
+    ],
 )
-def test_cell_says_if_can_move_down(position, can_move_down):
+def test_cell_says_if_can_move(position, future_position, can_move_down):
     b = Board(
         size=(10, 24),
-        deactivated_cells=[Cell(position=(0, 24), color=(0, 0, 0))],
+        deactivated_cells=[Cell(position=(0, 23), color=(0, 0, 0))],
     )
     c = Cell(position=position, color=(0, 0, 0))
 
-    assert c.can_move_down(b) is can_move_down
+    assert c.can_move(b, future_position) is can_move_down
