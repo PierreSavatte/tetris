@@ -24,13 +24,26 @@ class Cell(Drawable):
         future_position = x, y + 1
         return self.can_move(board, future_position)
 
-    def move_down(self, board):
-        (x, y) = self.position
-        future_position = x, y + 1
+    def move(self, board, future_position):
         if not self.can_move(board, future_position):
             raise CanNotMoveDown("Cell can not move down.")
         else:
             self.position = future_position
+
+    def move_down(self, board):
+        (x, y) = self.position
+        future_position = x, y + 1
+        self.move(board, future_position)
+
+    def move_left(self, board):
+        (x, y) = self.position
+        future_position = x - 1, y
+        self.move(board, future_position)
+
+    def move_right(self, board):
+        (x, y) = self.position
+        future_position = x + 1, y
+        self.move(board, future_position)
 
     def draw(self, screen):
         x, y = self.position

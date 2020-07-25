@@ -25,7 +25,7 @@ def test_cell_can_move_down():
 
 def test_cell_can_not_move_down_if_exceed_limit():
     b = Board(size=(10, 24))
-    initial_position = (0, 24)
+    initial_position = (0, 23)
     c = Cell(position=initial_position, color=(0, 0, 0))
 
     with pytest.raises(CanNotMoveDown):
@@ -37,13 +37,81 @@ def test_cell_can_not_move_down_if_exceed_limit():
 def test_cell_can_not_move_down_if_there_already_is_a_cell():
     b = Board(
         size=(10, 24),
-        deactivated_cells=[Cell(position=(0, 24), color=(0, 0, 0))],
+        deactivated_cells=[Cell(position=(0, 23), color=(0, 0, 0))],
     )
-    initial_position = (0, 23)
+    initial_position = (0, 22)
     c = Cell(position=initial_position, color=(0, 0, 0))
 
     with pytest.raises(CanNotMoveDown):
         c.move_down(b)
+
+    assert c.position == initial_position
+
+
+def test_cell_can_move_left():
+    b = Board(size=(10, 24))
+    c = Cell(position=(3, 4), color=(0, 0, 0))
+
+    c.move_left(b)
+
+    assert c.position == (2, 4)
+
+
+def test_cell_can_not_move_left_if_exceed_limit():
+    b = Board(size=(10, 24))
+    initial_position = (0, 0)
+    c = Cell(position=initial_position, color=(0, 0, 0))
+
+    with pytest.raises(CanNotMoveDown):
+        c.move_left(b)
+
+    assert c.position == initial_position
+
+
+def test_cell_can_not_move_left_if_there_already_is_a_cell():
+    b = Board(
+        size=(10, 24),
+        deactivated_cells=[Cell(position=(2, 4), color=(0, 0, 0))],
+    )
+    initial_position = (3, 4)
+    c = Cell(position=initial_position, color=(0, 0, 0))
+
+    with pytest.raises(CanNotMoveDown):
+        c.move_left(b)
+
+    assert c.position == initial_position
+
+
+def test_cell_can_move_right():
+    b = Board(size=(10, 24))
+    c = Cell(position=(3, 4), color=(0, 0, 0))
+
+    c.move_right(b)
+
+    assert c.position == (4, 4)
+
+
+def test_cell_can_not_move_right_if_exceed_limit():
+    b = Board(size=(10, 24))
+    initial_position = (23, 0)
+    c = Cell(position=initial_position, color=(0, 0, 0))
+
+    with pytest.raises(CanNotMoveDown):
+        c.move_right(b)
+
+    assert c.position == initial_position
+
+
+def test_cell_can_not_move_right_if_there_already_is_a_cell():
+    b = Board(
+        size=(10, 24),
+        deactivated_cells=[Cell(position=(4, 4), color=(0, 0, 0))],
+    )
+    initial_position = (3, 4)
+    c = Cell(position=initial_position, color=(0, 0, 0))
+
+    with pytest.raises(CanNotMoveDown):
+        c.move_right(b)
 
     assert c.position == initial_position
 
