@@ -1,3 +1,6 @@
+import pygame
+
+from ..constants import RECT_SIZE
 from . import Drawable
 
 
@@ -6,8 +9,9 @@ class CanNotMoveDown(Exception):
 
 
 class Cell(Drawable):
-    def __init__(self, position):
+    def __init__(self, position, color):
         self.position = position
+        self.color = color
 
     def move_down(self, board):
         (x, y) = self.position
@@ -20,4 +24,9 @@ class Cell(Drawable):
             self.position = future_position
 
     def draw(self, screen):
-        raise NotImplementedError()
+        x, y = self.position
+        pygame.draw.rect(
+            screen,
+            (x * RECT_SIZE, y * RECT_SIZE, RECT_SIZE, RECT_SIZE),
+            self.color,
+        )

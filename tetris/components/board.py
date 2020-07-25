@@ -1,3 +1,6 @@
+import pygame
+
+from ..constants import BLACK, RECT_SIZE
 from . import Drawable
 
 
@@ -18,4 +21,15 @@ class Board(Drawable):
         return [c.position for c in self.deactivated_cells]
 
     def draw(self, screen):
-        raise NotImplementedError()
+        self.active_piece.draw(screen)
+        for deactivated_cell in self.deactivated_cells:
+            deactivated_cell.draw(screen)
+
+        for x in range(self.size[0]):
+            for y in range(self.size[1]):
+                pygame.draw.rect(
+                    screen,
+                    BLACK,
+                    (x * RECT_SIZE, y * RECT_SIZE, RECT_SIZE, RECT_SIZE),
+                    1,
+                )

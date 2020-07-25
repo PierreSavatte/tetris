@@ -20,10 +20,6 @@ def test_piece_blueprints_holds_correct_data(piece_blueprint):
 
     assert isinstance(piece_blueprint.rotation_cell, int)
 
-    assert isinstance(piece_blueprint.color, tuple)
-    assert len(piece_blueprint.color) == 3
-    assert isinstance(piece_blueprint.color[0], int)
-
 
 @patch("random.randint")
 def test_set_piece_can_give_random_piece(randint_mock):
@@ -50,4 +46,12 @@ def test_piece_is_correctly_initialized(piece_blueprint):
     assert p.name == piece_blueprint.name
     assert p.cells == piece_blueprint.spawning_cells
     assert p.id_rotation_cell == piece_blueprint.rotation_cell
-    assert p.color == piece_blueprint.color
+
+
+@patch("tetris.components.cell.Cell.draw")
+def test_piece_can_be_drawn(cell_draw_mocked, piece_blueprint):
+    p = Piece(piece_blueprint)
+
+    p.draw(None)
+
+    assert cell_draw_mocked.call_count == 4

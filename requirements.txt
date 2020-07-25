@@ -1,2 +1,5 @@
-setuptools==49.2.0
 pbr==5.4.5
+pygame==1.9.6
+python-dotenv==0.14.0
+setuptools==49.2.0
+smart-getenv==1.1.0
