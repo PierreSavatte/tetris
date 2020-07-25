@@ -24,9 +24,9 @@ def test_board_is_init_correctly():
 @pytest.mark.parametrize(
     "position_to_test, result",
     [
-        ((10, 24), True),
-        ((11, 24), False),
-        ((10, 25), False),
+        ((9, 23), True),
+        ((11, 23), False),
+        ((9, 24), False),
         ((0, 0), True),
         ((-1, 0), False),
         ((0, -1), False),

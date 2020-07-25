@@ -3,6 +3,9 @@ import pygame
 from ..constants import BLACK, RECT_SIZE
 from . import Drawable
 
+from .cell import CanNotMoveDown
+from .piece import Piece, PieceBlueprints
+
 
 class Board(Drawable):
     def __init__(self, size, deactivated_cells=None):
@@ -15,7 +18,7 @@ class Board(Drawable):
         x_max = self.size[0]
         y_max = self.size[1]
         (x, y) = position
-        return x in range(x_max + 1) and y in range(y_max + 1)
+        return x in range(x_max) and y in range(y_max)
 
     def get_positions_of_deactivated_cells(self):
         return [c.position for c in self.deactivated_cells]
