@@ -84,7 +84,7 @@ class PieceBlueprints(Enum):
 
     @classmethod
     def get_random(cls):
-        i = random.randint(0, len(cls))
+        i = random.randint(0, len(cls) - 1)
         return list(cls)[i].value
 
 
