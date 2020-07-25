@@ -3,7 +3,7 @@ from collections import namedtuple
 from enum import Enum
 
 from . import Drawable
-from .cell import Cell
+from .cell import Cell, CanNotMoveDown
 
 PieceBlueprint = namedtuple(
     "PieceBlueprint", ["name", "spawning_cells", "rotation_cell"]
@@ -96,6 +96,13 @@ class Piece(Drawable):
         self.name = blueprint.name
         self.cells = blueprint.spawning_cells
         self.id_rotation_cell = blueprint.rotation_cell
+
+    def move_down(self, board):
+        if all(c.can_move_down(board) for c in self.cells):
+            for c in self.cells:
+                c.move_down(board)
+        else:
+            raise CanNotMoveDown("Piece can not move down.")
 
     def draw(self, screen):
         for c in self.cells:

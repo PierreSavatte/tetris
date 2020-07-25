@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from tetris.components.cell import Cell
+from tetris.components.board import Board
+from tetris.components.cell import Cell, CanNotMoveDown
 from tetris.components.piece import Piece, PieceBlueprints
 
 
@@ -55,3 +56,43 @@ def test_piece_can_be_drawn(cell_draw_mocked, piece_blueprint):
     p.draw(None)
 
     assert cell_draw_mocked.call_count == 4
+
+
+@pytest.fixture
+def board():
+    return Board(
+        size=(10, 24), deactivated_cells=[Cell((0, 24), color=(0, 0, 0))],
+    )
+
+
+def test_piece_can_move_down(board, piece_blueprint):
+    p = Piece(piece_blueprint)
+    p.cells = [Cell((0, 0), (0, 0, 0)), Cell((1, 0), (0, 0, 0))]
+
+    p.move_down(board)
+
+    assert [c.position for c in p.cells] == [(0, 1), (1, 1)]
+
+
+def test_piece_can_move_down_if_one_cell_has_obstacle(board, piece_blueprint):
+    p = Piece(piece_blueprint)
+    p.cells = [Cell((0, 22), (0, 0, 0)), Cell((0, 23), (0, 0, 0))]
+
+    with pytest.raises(CanNotMoveDown):
+        p.move_down(board)
+
+    # Assert piece hasn't moved
+    assert [c.position for c in p.cells] == [(0, 22), (0, 23)]
+
+
+def test_piece_can_move_down_if_one_cell_is_on_the_border(
+    board, piece_blueprint
+):
+    p = Piece(piece_blueprint)
+    p.cells = [Cell((1, 23), (0, 0, 0)), Cell((1, 24), (0, 0, 0))]
+
+    with pytest.raises(CanNotMoveDown):
+        p.move_down(board)
+
+    # Assert piece hasn't moved
+    assert [c.position for c in p.cells] == [(1, 23), (1, 24)]
