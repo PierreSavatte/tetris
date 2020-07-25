@@ -8,7 +8,7 @@ WHITE = (255, 255, 255)
 
 WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT = (
     getenv("WINDOW_WIDTH", type=int, default=650),
-    getenv("WINDOW_HEIGHT", type=int, default=850),
+    getenv("WINDOW_HEIGHT", type=int, default=900),
 )
 RECT_SIZE = getenv("RECT_SIZE", type=int, default=33)
 
