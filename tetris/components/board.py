@@ -21,7 +21,8 @@ class Board(Drawable):
         return [c.position for c in self.deactivated_cells]
 
     def draw(self, screen):
-        self.active_piece.draw(screen)
+        if self.active_piece:
+            self.active_piece.draw(screen)
         for deactivated_cell in self.deactivated_cells:
             deactivated_cell.draw(screen)
 
