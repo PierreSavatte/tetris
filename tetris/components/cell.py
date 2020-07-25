@@ -25,8 +25,5 @@ class Cell(Drawable):
 
     def draw(self, screen):
         x, y = self.position
-        pygame.draw.rect(
-            screen,
-            (x * RECT_SIZE, y * RECT_SIZE, RECT_SIZE, RECT_SIZE),
-            self.color,
-        )
+        rect = pygame.Rect(x * RECT_SIZE, y * RECT_SIZE, RECT_SIZE, RECT_SIZE)
+        pygame.draw.rect(screen, self.color, rect)

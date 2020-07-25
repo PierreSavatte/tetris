@@ -57,5 +57,5 @@ def test_cell_can_be_printed(draw_rect_mocked):
     c.draw(screen=screen)
 
     draw_rect_mocked.assert_called_once_with(
-        screen, (5 * RECT_SIZE, 10 * RECT_SIZE, RECT_SIZE, RECT_SIZE), color
+        screen, color, (5 * RECT_SIZE, 10 * RECT_SIZE, RECT_SIZE, RECT_SIZE)
     )
