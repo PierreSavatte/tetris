@@ -1,10 +1,9 @@
 import pygame
 
-from ..constants import BLACK, RECT_SIZE
 from . import Drawable
-
-from .cell import CanNotMoveDown
 from .piece import Piece, PieceBlueprints
+from ..constants import BLACK, RECT_SIZE
+from ..exceptions import CanNotMove
 
 
 class Board(Drawable):
@@ -20,7 +19,8 @@ class Board(Drawable):
         (x, y) = position
         return x in range(x_max) and y in range(y_max)
 
-    def get_positions_of_deactivated_cells(self):
+    @property
+    def positions_of_deactivated_cells(self):
         return [c.position for c in self.deactivated_cells]
 
     def draw(self, screen):
@@ -37,3 +37,26 @@ class Board(Drawable):
                     (x * RECT_SIZE, y * RECT_SIZE, RECT_SIZE, RECT_SIZE),
                     1,
                 )
+
+    def set_random_active_piece(self):
+        self.active_piece = Piece(PieceBlueprints.get_random())
+
+    def update(self, keys_pressed):
+        if not self.active_piece:
+            self.set_random_active_piece()
+        else:
+            if pygame.K_UP in keys_pressed:
+                print(
+                    "Should go directly at the bottom, but not implemented yet."
+                )
+            else:
+                try:
+                    self.active_piece.move_down(self)
+                except CanNotMove:
+                    self.deactivated_cells.extend(self.active_piece.cells)
+                    self.set_random_active_piece()
+
+            if pygame.K_LEFT in keys_pressed:
+                self.active_piece.move_left(self)
+            if pygame.K_RIGHT in keys_pressed:
+                self.active_piece.move_right(self)

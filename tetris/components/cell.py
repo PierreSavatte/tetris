@@ -1,11 +1,8 @@
 import pygame
 
-from ..constants import RECT_SIZE
 from . import Drawable
-
-
-class CanNotMoveDown(Exception):
-    pass
+from ..constants import RECT_SIZE
+from ..exceptions import CanNotMove
 
 
 class Cell(Drawable):
@@ -13,37 +10,23 @@ class Cell(Drawable):
         self.position = position
         self.color = color
 
-    @staticmethod
-    def can_move(board, future_position):
-        return board.position_is_inside(future_position) and (
-            future_position not in board.get_positions_of_deactivated_cells()
+    def compute_future_position(self, direction):
+        return (
+            self.position[0] + direction[0],
+            self.position[1] + direction[1],
         )
 
-    def can_move_down(self, board):
-        (x, y) = self.position
-        future_position = x, y + 1
-        return self.can_move(board, future_position)
+    def can_move(self, board, direction):
+        future_position = self.compute_future_position(direction)
+        return board.position_is_inside(future_position) and (
+            future_position not in board.positions_of_deactivated_cells
+        )
 
-    def move(self, board, future_position):
-        if not self.can_move(board, future_position):
-            raise CanNotMoveDown("Cell can not move down.")
+    def move(self, board, direction):
+        if not self.can_move(board, direction):
+            raise CanNotMove("Cell can not move.")
         else:
-            self.position = future_position
-
-    def move_down(self, board):
-        (x, y) = self.position
-        future_position = x, y + 1
-        self.move(board, future_position)
-
-    def move_left(self, board):
-        (x, y) = self.position
-        future_position = x - 1, y
-        self.move(board, future_position)
-
-    def move_right(self, board):
-        (x, y) = self.position
-        future_position = x + 1, y
-        self.move(board, future_position)
+            self.position = self.compute_future_position(direction)
 
     def draw(self, screen):
         x, y = self.position

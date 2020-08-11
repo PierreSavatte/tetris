@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from tetris.components.board import Board
-from tetris.components.cell import Cell, CanNotMoveDown
+from tetris.components.cell import Cell, CanNotMove
 from tetris.constants import RECT_SIZE
 
 
@@ -14,104 +14,54 @@ def test_cell_is_init_correctly():
     assert c.color == (0, 0, 0)
 
 
-def test_cell_can_move_down():
+def test_cell_can_move(direction):
     b = Board(size=(10, 24))
     c = Cell(position=(3, 4), color=(0, 0, 0))
 
-    c.move_down(b)
+    old_position = c.position
+    c.move(b, direction)
 
-    assert c.position == (3, 5)
-
-
-def test_cell_can_not_move_down_if_exceed_limit():
-    b = Board(size=(10, 24))
-    initial_position = (0, 23)
-    c = Cell(position=initial_position, color=(0, 0, 0))
-
-    with pytest.raises(CanNotMoveDown):
-        c.move_down(b)
-
-    assert c.position == initial_position
-
-
-def test_cell_can_not_move_down_if_there_already_is_a_cell():
-    b = Board(
-        size=(10, 24),
-        deactivated_cells=[Cell(position=(0, 23), color=(0, 0, 0))],
+    assert c.position == (
+        old_position[0] + direction[0],
+        old_position[1] + direction[1],
     )
-    initial_position = (0, 22)
+
+
+def test_cell_can_not_move_if_exceed_limit(direction):
+    b = Board(size=(10, 24))
+    direction_x, direction_y = direction
+    if direction_x:
+        potential_values_of_x = {1: 9, -1: 0}
+        initial_position = (potential_values_of_x[direction_x], 0)
+    else:
+        potential_values_of_y = {1: 23, -1: 0}
+        initial_position = (0, potential_values_of_y[direction_y])
     c = Cell(position=initial_position, color=(0, 0, 0))
 
-    with pytest.raises(CanNotMoveDown):
-        c.move_down(b)
+    with pytest.raises(CanNotMove):
+        c.move(b, direction)
 
     assert c.position == initial_position
 
 
-def test_cell_can_move_left():
-    b = Board(size=(10, 24))
-    c = Cell(position=(3, 4), color=(0, 0, 0))
-
-    c.move_left(b)
-
-    assert c.position == (2, 4)
-
-
-def test_cell_can_not_move_left_if_exceed_limit():
-    b = Board(size=(10, 24))
-    initial_position = (0, 0)
-    c = Cell(position=initial_position, color=(0, 0, 0))
-
-    with pytest.raises(CanNotMoveDown):
-        c.move_left(b)
-
-    assert c.position == initial_position
-
-
-def test_cell_can_not_move_left_if_there_already_is_a_cell():
-    b = Board(
-        size=(10, 24),
-        deactivated_cells=[Cell(position=(2, 4), color=(0, 0, 0))],
-    )
-    initial_position = (3, 4)
-    c = Cell(position=initial_position, color=(0, 0, 0))
-
-    with pytest.raises(CanNotMoveDown):
-        c.move_left(b)
-
-    assert c.position == initial_position
-
-
-def test_cell_can_move_right():
-    b = Board(size=(10, 24))
-    c = Cell(position=(3, 4), color=(0, 0, 0))
-
-    c.move_right(b)
-
-    assert c.position == (4, 4)
-
-
-def test_cell_can_not_move_right_if_exceed_limit():
-    b = Board(size=(10, 24))
-    initial_position = (23, 0)
-    c = Cell(position=initial_position, color=(0, 0, 0))
-
-    with pytest.raises(CanNotMoveDown):
-        c.move_right(b)
-
-    assert c.position == initial_position
-
-
-def test_cell_can_not_move_right_if_there_already_is_a_cell():
+def test_cell_can_not_move_if_there_already_is_a_cell(direction):
     b = Board(
         size=(10, 24),
         deactivated_cells=[Cell(position=(4, 4), color=(0, 0, 0))],
     )
-    initial_position = (3, 4)
+    direction_x, direction_y = direction
+    potential_values = {1: 3, -1: 5, 0: 4}
+    initial_position = (
+        potential_values[direction_x],
+        potential_values[direction_y],
+    )
+    print("initial_position=", initial_position)
+    print("direction=", direction)
     c = Cell(position=initial_position, color=(0, 0, 0))
 
-    with pytest.raises(CanNotMoveDown):
-        c.move_right(b)
+    print("c.can_move=", c.can_move(b, direction))
+    with pytest.raises(CanNotMove):
+        c.move(b, direction)
 
     assert c.position == initial_position
 
@@ -130,21 +80,21 @@ def test_cell_can_be_printed(draw_rect_mocked):
 
 
 @pytest.mark.parametrize(
-    "position, future_position, can_move_down",
+    "position, direction, can_actually_move",
     [
-        ((0, 23), (0, 24), False),  # Can not go further the bottom limit
+        ((0, 23), (0, 1), False),  # Can not go further the bottom limit
         ((0, 0), (0, -1), False),  # Can not go further the top limit
         ((0, 0), (-1, 0), False),  # Can not go further the left limit
-        ((0, 23), (0, 24), False),  # Can not go further the right limit
-        ((0, 22), (0, 23), False),  # There already a cell here
+        ((0, 23), (0, 1), False),  # Can not go further the right limit
+        ((0, 22), (0, 1), False),  # There already a cell here
         ((0, 0), (0, 1), True),
     ],
 )
-def test_cell_says_if_can_move(position, future_position, can_move_down):
+def test_cell_says_if_can_move(position, direction, can_actually_move):
     b = Board(
         size=(10, 24),
         deactivated_cells=[Cell(position=(0, 23), color=(0, 0, 0))],
     )
     c = Cell(position=position, color=(0, 0, 0))
 
-    assert c.can_move(b, future_position) is can_move_down
+    assert c.can_move(b, direction) is can_actually_move

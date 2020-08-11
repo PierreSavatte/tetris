@@ -3,13 +3,20 @@ from unittest.mock import patch
 import pytest
 
 from tetris.components.board import Board
-from tetris.components.cell import Cell, CanNotMoveDown
+from tetris.components.cell import Cell
 from tetris.components.piece import Piece, PieceBlueprints
+from tetris.exceptions import CanNotMove
 
 
-@pytest.fixture
-def piece_blueprint():
-    return list(PieceBlueprints)[0].value
+@pytest.fixture(
+    params=list(PieceBlueprints),
+    ids=[
+        f"PieceBlueprints.{blueprint.name}"
+        for blueprint in list(PieceBlueprints)
+    ],
+)
+def piece_blueprint(request):
+    return request.param.value
 
 
 def test_piece_blueprints_holds_correct_data(piece_blueprint):
@@ -32,10 +39,11 @@ def test_set_piece_can_give_random_piece(randint_mock):
 
 
 def test_piece_can_only_can_be_init_with_a_blueprint(piece_blueprint):
+    # Initialize piece with a blueprint
     p = Piece(piece_blueprint)
-
     assert p.name == piece_blueprint.name
 
+    # Initialize piece with the values of the blueprint
     params = piece_blueprint._asdict()
     with pytest.raises(ValueError):
         Piece(params)
@@ -58,41 +66,70 @@ def test_piece_can_be_drawn(cell_draw_mocked, piece_blueprint):
     assert cell_draw_mocked.call_count == 4
 
 
-@pytest.fixture
-def board():
-    return Board(
+def test_piece_can_move(piece_blueprint, direction):
+    b = Board(
         size=(10, 24), deactivated_cells=[Cell((0, 24), color=(0, 0, 0))],
     )
-
-
-def test_piece_can_move_down(board, piece_blueprint):
     p = Piece(piece_blueprint)
-    p.cells = [Cell((0, 0), (0, 0, 0)), Cell((1, 0), (0, 0, 0))]
+    # Overwrite piece's cells
+    p.cells = [Cell((1, 1), (0, 0, 0)), Cell((1, 2), (0, 0, 0))]
 
-    p.move_down(board)
+    p.move(b, direction)
 
-    assert [c.position for c in p.cells] == [(0, 1), (1, 1)]
-
-
-def test_piece_can_move_down_if_one_cell_has_obstacle(board, piece_blueprint):
-    p = Piece(piece_blueprint)
-    p.cells = [Cell((0, 22), (0, 0, 0)), Cell((0, 23), (0, 0, 0))]
-
-    with pytest.raises(CanNotMoveDown):
-        p.move_down(board)
-
-    # Assert piece hasn't moved
-    assert [c.position for c in p.cells] == [(0, 22), (0, 23)]
+    if direction == (1, 0):
+        new_positions = [(2, 1), (2, 2)]
+    elif direction == (-1, 0):
+        new_positions = [(0, 1), (0, 2)]
+    elif direction == (0, 1):
+        new_positions = [(1, 2), (1, 3)]
+    else:
+        new_positions = [(1, 0), (1, 1)]
+    assert [c.position for c in p.cells] == new_positions
 
 
-def test_piece_can_move_down_if_one_cell_is_on_the_border(
-    board, piece_blueprint
+def test_piece_can_not_move_if_one_cell_has_obstacle(
+    piece_blueprint, direction
 ):
+    b = Board(
+        size=(10, 24),
+        deactivated_cells=[
+            Cell((2, 1), (0, 0, 0)),
+            Cell((4, 2), (0, 0, 0)),
+            Cell((1, 3), (0, 0, 0)),
+            Cell((3, 4), (0, 0, 0)),
+        ],
+    )
     p = Piece(piece_blueprint)
-    p.cells = [Cell((1, 23), (0, 0, 0)), Cell((1, 24), (0, 0, 0))]
+    # Overwrite piece's cells
+    p.cells = [
+        Cell((2, 2), (0, 0, 0)),
+        Cell((3, 2), (0, 0, 0)),
+        Cell((2, 3), (0, 0, 0)),
+        Cell((3, 3), (0, 0, 0)),
+    ]
 
-    with pytest.raises(CanNotMoveDown):
-        p.move_down(board)
+    with pytest.raises(CanNotMove):
+        p.move(b, direction)
 
     # Assert piece hasn't moved
-    assert [c.position for c in p.cells] == [(1, 23), (1, 24)]
+    assert [c.position for c in p.cells] == [(2, 2), (3, 2), (2, 3), (3, 3)]
+
+
+def test_piece_can_not_move_if_one_cell_is_on_the_border(
+    piece_blueprint, direction
+):
+    b = Board(size=(2, 2))
+    p = Piece(piece_blueprint)
+    # Overwrite piece's cells
+    p.cells = [
+        Cell((0, 0), (0, 0, 0)),
+        Cell((1, 0), (0, 0, 0)),
+        Cell((0, 1), (0, 0, 0)),
+        Cell((1, 1), (0, 0, 0)),
+    ]
+
+    with pytest.raises(CanNotMove):
+        p.move(b, direction)
+
+    # Assert piece hasn't moved
+    assert [c.position for c in p.cells] == [(0, 0), (1, 0), (0, 1), (1, 1)]

@@ -48,7 +48,7 @@ def test_board_gives_positions_of_deactivated_cells():
         ],
     )
 
-    assert b.get_positions_of_deactivated_cells() == [
+    assert b.positions_of_deactivated_cells == [
         (0, 24),
         (1, 24),
         (2, 24),
