@@ -28,10 +28,10 @@ class Board(Drawable):
         return [c.position for c in self.deactivated_cells]
 
     def draw(self, screen):
-        if self.active_piece:
-            self.active_piece.draw(screen)
         for deactivated_cell in self.deactivated_cells:
             deactivated_cell.draw(screen)
+        if self.active_piece:
+            self.active_piece.draw(screen)
 
         for x in range(self.size[0]):
             for y in range(self.size[1]):
@@ -49,7 +49,7 @@ class Board(Drawable):
         if not self.active_piece:
             self.set_random_active_piece()
             if not self.active_piece.can_move(self, DOWN):
-                raise GameOver()
+                raise GameOver("Spawning piece can not move down.")
         else:
             if pygame.K_UP in keys_pressed:
                 self.active_piece.go_at_the_bottom(self)
@@ -60,7 +60,7 @@ class Board(Drawable):
                 self.deactivated_cells.extend(self.active_piece.cells)
                 self.set_random_active_piece()
                 if not self.active_piece.can_move(self, DOWN):
-                    raise GameOver()
+                    raise GameOver("Spawning piece can not move down.")
 
             if pygame.K_LEFT in keys_pressed:
                 try:
