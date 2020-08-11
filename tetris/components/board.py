@@ -5,7 +5,7 @@ import pygame
 from . import Drawable
 from .piece import Piece, PieceBlueprints
 from ..constants import LOGGER_LEVEL, BLACK, RECT_SIZE, DOWN, RIGHT, LEFT
-from ..exceptions import CanNotMove
+from ..exceptions import CanNotMove, GameOver
 
 logging.basicConfig(level=LOGGER_LEVEL)
 
@@ -48,17 +48,19 @@ class Board(Drawable):
     def update(self, keys_pressed):
         if not self.active_piece:
             self.set_random_active_piece()
+            if not self.active_piece.can_move(self, DOWN):
+                raise GameOver()
         else:
             if pygame.K_UP in keys_pressed:
-                logging.error(
-                    "Should go directly at the bottom, but not implemented yet."
-                )
-            else:
-                try:
-                    self.active_piece.move(self, DOWN)
-                except CanNotMove:
-                    self.deactivated_cells.extend(self.active_piece.cells)
-                    self.set_random_active_piece()
+                self.active_piece.go_at_the_bottom(self)
+
+            try:
+                self.active_piece.move(self, DOWN)
+            except CanNotMove:
+                self.deactivated_cells.extend(self.active_piece.cells)
+                self.set_random_active_piece()
+                if not self.active_piece.can_move(self, DOWN):
+                    raise GameOver()
 
             if pygame.K_LEFT in keys_pressed:
                 try:

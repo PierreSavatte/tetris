@@ -100,8 +100,11 @@ class Piece(Drawable):
         self.cells = deepcopy(blueprint.spawning_cells)
         self.id_rotation_cell = blueprint.rotation_cell
 
+    def can_move(self, board, direction):
+        return all(c.can_move(board, direction) for c in self.cells)
+
     def move(self, board, direction):
-        if all(c.can_move(board, direction) for c in self.cells):
+        if self.can_move(board, direction):
             for c in self.cells:
                 c.move(board, direction)
         else:
