@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 from collections import namedtuple
 from enum import Enum
 
@@ -95,7 +96,7 @@ class Piece(Drawable):
             raise ValueError("Can not init a Piece without a blueprint.")
 
         self.name = blueprint.name
-        self.cells = blueprint.spawning_cells
+        self.cells = deepcopy(blueprint.spawning_cells)
         self.id_rotation_cell = blueprint.rotation_cell
 
     def move(self, board, direction):

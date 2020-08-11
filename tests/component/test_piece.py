@@ -53,7 +53,12 @@ def test_piece_is_correctly_initialized(piece_blueprint):
     p = Piece(piece_blueprint)
 
     assert p.name == piece_blueprint.name
-    assert p.cells == piece_blueprint.spawning_cells
+
+    cells_position = [c.position for c in p.cells]
+    spawning_cells_position = [
+        c.position for c in piece_blueprint.spawning_cells
+    ]
+    assert cells_position == spawning_cells_position
     assert p.id_rotation_cell == piece_blueprint.rotation_cell
 
 
