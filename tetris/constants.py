@@ -1,7 +1,11 @@
+import logging
+
 from dotenv import load_dotenv
 from smart_getenv import getenv
 
 load_dotenv()
+
+LOGGER_LEVEL = logging.DEBUG
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -18,3 +22,8 @@ BOARD_SIZE = BOARD_WIDTH, BOARD_HEIGHT = (
 )
 
 FPS = getenv("FPS", type=int, default=60)
+
+UP = (0, -1)
+DOWN = (0, 1)
+RIGHT = (1, 0)
+LEFT = (-1, 0)
