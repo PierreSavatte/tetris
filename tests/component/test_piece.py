@@ -138,3 +138,19 @@ def test_piece_can_not_move_if_one_cell_is_on_the_border(
 
     # Assert piece hasn't moved
     assert [c.position for c in p.cells] == [(0, 0), (1, 0), (0, 1), (1, 1)]
+
+
+def test_piece_can_go_at_the_bottom():
+    b = Board(
+        size=(10, 24), deactivated_cells=[Cell((4, 23), color=(0, 0, 0))]
+    )
+    p = Piece(PieceBlueprints.I.value)
+
+    p.go_at_the_bottom(b)
+
+    assert [c.position for c in p.cells] == [
+        (3, 22),
+        (4, 22),
+        (5, 22),
+        (6, 22),
+    ]

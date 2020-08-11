@@ -1,10 +1,11 @@
 import random
-from copy import deepcopy
 from collections import namedtuple
+from copy import deepcopy
 from enum import Enum
 
 from . import Drawable
 from .cell import Cell
+from ..constants import DOWN
 from ..exceptions import CanNotMove
 
 PieceBlueprint = namedtuple(
@@ -105,6 +106,13 @@ class Piece(Drawable):
                 c.move(board, direction)
         else:
             raise CanNotMove("Piece can not move down.")
+
+    def go_at_the_bottom(self, board):
+        while True:
+            try:
+                self.move(board, DOWN)
+            except CanNotMove:
+                return
 
     def draw(self, screen):
         for c in self.cells:
