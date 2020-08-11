@@ -55,11 +55,8 @@ def test_cell_can_not_move_if_there_already_is_a_cell(direction):
         potential_values[direction_x],
         potential_values[direction_y],
     )
-    print("initial_position=", initial_position)
-    print("direction=", direction)
     c = Cell(position=initial_position, color=(0, 0, 0))
 
-    print("c.can_move=", c.can_move(b, direction))
     with pytest.raises(CanNotMove):
         c.move(b, direction)
 
